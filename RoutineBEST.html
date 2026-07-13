@@ -1,0 +1,401 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OBS Stream-Ready Mini Routine</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&display=swap');
+
+  html, body {
+    background-color: transparent; 
+    color: #ffffff;
+    font-family: 'Manrope', sans-serif;
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    overflow: hidden; 
+  }
+
+  /* --- হাইট এবং সাইজ কমানো হয়েছে --- */
+  .mobile-container {
+    width: 100%;
+    max-width: 310px; /* উইডথ একটু কমানো হয়েছে */
+    background: linear-gradient(165deg, #070a13 0%, #0f172a 100%); 
+    border: 2px solid #1e293b;
+    border-radius: 6px;
+    padding: 4px 6px; /* প্যাডিং একদম কম */
+    box-shadow: 0 15px 30px rgba(0,0,0,0.8);
+    box-sizing: border-box;
+    margin: 0 auto;
+  }
+
+  .group {
+    margin-bottom: 2px; /* গ্রুপগুলোর মাঝের গ্যাপ কমানো হয়েছে */
+  }
+
+  .group-title {
+    font-size: 9px; /* টাইটেল ফন্ট ছোট করা হয়েছে */
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    margin-top: 2px;
+    margin-bottom: 2px;
+    padding-bottom: 1px;
+    border-bottom: 1px dashed rgba(51, 65, 85, 0.4);
+  }
+
+  .g1 { color: #38bdf8; }
+  .g2 { color: #fbbf24; }
+  .g3 { color: #f43f5e; }
+
+  /* --- রো ডিজাইন (একদম স্লিম ও কমপ্যাক্ট) --- */
+  .row {
+    background: #131c31; 
+    border-left: 2px solid #3b82f6; 
+    border-radius: 3px;
+    padding: 1.5px 4px; /* উপর-নিচের প্যাডিং ১.৫ পিক্সেল করে একদম কম */
+    margin-bottom: 1px; /* প্রতিটা রো এর মাঝের দূরত্ব ১ পিক্সেল */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    transition: all 0.1s ease;
+  }
+
+  .row:hover {
+    background: #1a2642;
+  }
+
+  .time {
+    font-size: 9px; /* টাইম ফন্ট সাইজ কমানো হয়েছে */
+    font-weight: 800;
+    color: #ffffff; 
+    letter-spacing: 0.1px;
+    flex-shrink: 0;
+  }
+
+  .act {
+    font-size: 9px; /* অ্যাক্টিভিটি ফন্ট সাইজ কমানো হয়েছে */
+    font-weight: 800;
+    color: #38bdf8; 
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    flex-shrink: 0;
+  }
+
+  /* --- ☕ ব্রেক ডিজাইন (স্লিম লুক) --- */
+  .row.brk {
+    background: rgba(15, 23, 42, 0.5);
+    border-left: 2px solid #475569; 
+  }
+  .row.brk .time { color: #94a3b8; }
+  .row.brk .act { color: #cbd5e1; }
+
+  /* 🍔 লাঞ্চ ও ডিনার */
+  .row.meal-lunch {
+    background: #111a13; 
+    border-left: 2px solid #10b981;
+  }
+  .row.meal-lunch .act { color: #10b981; }
+
+  /* 🌙 স্লিপ */
+  .row.sleep-highlight {
+    background: #31212a;
+    border-left: 2px solid #f43f5e;
+  }
+
+  /* --- ট্যাগস ও অনগোয়িং অ্যানিমেশন --- */
+  .ongoing-tag {
+    position: absolute;
+    left: 45%;
+    transform: translateX(-50%);
+    font-size: 7.5px;
+    font-weight: 900;
+    text-transform: uppercase;
+    padding: 0px 4px;
+    border-radius: 2px;
+    background: #0284c7; 
+    color: #ffffff; 
+    display: none;
+    letter-spacing: 0.3px;
+    animation: ongoingPulse 1.2s infinite ease-in-out; 
+  }
+  
+
+  .done-tag {
+    font-size: 7.5px;
+    font-weight: 900;
+    text-transform: uppercase;
+    padding: 0px 3px;
+    border-radius: 2px;
+    margin-left: 3px;
+    display: none;
+    background: #475569;
+    color: #ffffff !important; 
+  }
+  #b_lunch2{
+    color: red;
+  }
+  #b_nap{
+    color: #0284c7;
+  }
+  .act-dinner{
+    color: aquamarine;
+    font-size: 11px;
+  font-family: Arial, Helvetica, sans-serif;
+
+  }
+  .act-lunch{
+    color: aquamarine;
+    font-size: 11px;
+    font-family: Arial, Helvetica, sans-serif;
+
+  }
+  .act-nap{
+    font-size: 11px;
+    color: gold;
+    font-family: Arial, Helvetica, sans-serif;
+
+  }
+
+.time-break{
+  color: rgb(1, 230, 247);
+  font-size: 11px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+.act-fajr{ 
+  color: #22c55e; 
+  font-size: 11px; 
+} 
+.act-Asr, .act-Magrib{
+  color: #00f2fe;
+  font-size: 11px;
+  font-family: Arial, Helvetica, sans-serif;
+
+}
+  @keyframes ongoingPulse {
+    0% { transform: translateX(-50%) scale(0.95); }
+    50% { transform: translateX(-50%) scale(1.05); box-shadow: 0 0 6px rgba(2, 132, 199, 0.6); }
+    100% { transform: translateX(-50%) scale(0.95); }
+  }
+
+  /* ⚡ রানিং স্টেট */
+  .row.ongoing {
+    background: #0f243a !important;
+    border-left-color: #00f2fe;
+  }
+  .row.ongoing .time, .row.ongoing .act { color: #00f2fe !important; }
+  .row.ongoing .ongoing-tag { display: inline-block; }
+
+  /* ✅ কমপ্লিটেড স্টেট */
+  .row.completed {
+    background: rgba(9, 13, 22, 0.3) !important; 
+    border-left-color: #1e293b;
+    opacity: 0.4;
+  }
+  .row.completed .time, .row.completed .act {
+    color: #475569 !important; 
+    text-decoration: line-through;
+  }
+  .row.completed .done-tag { display: inline-block; }
+</style>
+</head>
+<body>
+
+
+  <div class="group">
+    <div class="row brk" id="fajr">
+      <span class="time-break">7:00 AM - 7:20 AM</span>
+      <span class="act-fajr">📖 Quran Tilawah</span>
+    </div>
+  
+    <div class="row is-session" data-id="s1">
+      <span class="time">7:20 AM - 8:20 AM</span>
+      <span class="act">Study > Session 1</span>
+    </div>
+    <div class="row brk is-break">
+      <span class="time">8:20 AM - 8:30 AM</span>
+      <span class="act">10m Break</span>
+    </div>
+  
+    <div class="row is-session" data-id="s2">
+      <span class="time">8:30 AM - 9:30 AM</span>
+      <span class="act">Study > Session 2</span>
+    </div>
+    <div class="row brk is-break">
+      <span class="time">9:30 AM - 9:40 AM</span>
+      <span class="act">10m Break</span>
+    </div>
+  
+    <div class="row is-session" data-id="s3">
+      <span class="time">9:40 AM - 10:40 AM</span>
+      <span class="act">Study > Session 3</span>
+    </div>
+    <div class="row brk is-break">
+      <span class="time">10:40 AM - 10:50 AM</span>
+      <span class="act">10m Break</span>
+    </div>
+  
+    <div class="row is-session" data-id="s4">
+      <span class="time">10:50 AM - 11:50 AM</span>
+      <span class="act">Study > Session 4</span>
+    </div>
+    <div class="row brk is-break">
+      <span class="time">11:50 AM - 12:00 PM</span>
+      <span class="act">10m Break</span>
+    </div>
+  
+    <div class="row is-session" data-id="s5">
+      <span class="time">12:00 PM - 1:00 PM</span>
+      <span class="act">Study > Session 5</span>
+    </div>
+  
+    <div class="row brk" id="lunch">
+      <span class="time">1:00 PM - 1:30 PM</span>
+      <span class="act-lunch">30m Lunch</span>
+    </div>
+  
+    <div class="row is-session" data-id="s6">
+      <span class="time">1:30 PM - 2:30 PM</span>
+      <span class="act">Study > Session 6</span>
+    </div>
+    <div class="row brk is-break">
+      <span class="time">2:30 PM - 2:40 PM</span>
+      <span class="act">10m Break</span>
+    </div>
+  
+    <div class="row is-session" data-id="s7">
+      <span class="time">2:40 PM - 3:40 PM</span>
+      <span class="act">Study > Session 7</span>
+    </div>
+  
+    <div class="row brk" id="nap">
+      <span class="time">3:40 PM - 4:25 PM</span>
+      <span class="act-nap">45m Nap + Shower</span>
+    </div>
+  
+    <div class="group-title g1">I'm So Confident - 2</div>
+  
+    <div class="row is-session" data-id="s8">
+      <span class="time">4:25 PM - 5:25 PM</span>
+      <span class="act">Study > Session 8</span>
+    </div>
+  
+    <div class="row brk" id="asr">
+      <span class="time">5:25 PM - 5:40 PM</span>
+      <span class="act-Asr">15m Asr Prayer</span>
+    </div>
+  
+    <div class="row is-session" data-id="s9">
+      <span class="time">5:40 PM - 6:40 PM</span>
+      <span class="act">Study > Session 9</span>
+    </div>
+  
+    <div class="row brk" id="maghrib">
+      <span class="time">6:40 PM - 6:50 PM</span>
+      <span class="act">10m Break</span>
+    </div>
+
+    <div class="row is-session" data-id="s10">
+      <span class="time">6:50 PM - 7:50 PM</span>
+      <span class="act">Study > Session 10</span>
+    </div>
+  
+    <div class="row brk is-break">
+      <span class="time">7:50 PM - 8:05 PM</span>
+      <span class="act-Magrib">15m Maghrib Prayer</span>
+    </div>
+    <span class="act-Magrib">15m Maghrib Prayer</span>
+
+    <div class="row is-session" data-id="s11">
+      <span class="time">8:05 PM - 9:05 PM</span>
+      <span class="act">Study > Session 11</span>
+    </div>
+  
+    <div class="row brk">
+      <span class="time">9:05 PM - 9:35 PM</span>
+      <span class="act-dinner">30m Dinner</span>
+    </div>
+  
+    <div class="row is-session" data-id="s12">
+      <span class="time">9:35 PM - 10:35 PM</span>
+      <span class="act">Study > Session 12</span>
+    </div>
+  
+    <div class="row brk is-break">
+      <span class="time">10:35 PM - 10:45 PM</span>
+      <span class="act">10m Break</span>
+    </div>
+  
+    <div class="row is-session" data-id="s13">
+      <span class="time">10:45 PM - 11:45 PM</span>
+      <span class="act">Study > Session 13</span>
+    </div>
+  
+    <div class="row brk is-break">
+      <span class="time">11:45 PM - 11:55 PM</span>
+      <span class="act">10m Break</span>
+    </div>
+  
+    <div class="row is-session" data-id="s14">
+      <span class="time">11:55 PM - 12:55 AM</span>
+      <span class="act">Study > Session 14</span>
+    </div>
+  
+    <div class="row brk sleep-highlight">
+      <span class="time">12:55 AM - 7:00 AM</span>
+      <span class="act">Sleep</span>
+    </div>
+  </div>
+
+
+
+
+
+
+<script>
+  document.querySelectorAll('.row').forEach(row => {
+    const ongoingSpan = document.createElement('span');
+    ongoingSpan.className = 'ongoing-tag';
+    ongoingSpan.innerText = 'Ongoing';
+    row.appendChild(ongoingSpan);
+
+    const actSpan = row.querySelector('.act');
+    const doneSpan = document.createElement('span');
+    doneSpan.className = 'done-tag';
+    doneSpan.innerText = 'Done';
+    actSpan.appendChild(doneSpan);
+
+    const taskId = row.getAttribute('data-id');
+    const savedState = localStorage.getItem(taskId);
+
+    if (savedState === 'ongoing') {
+      row.classList.add('ongoing');
+    } else if (savedState === 'completed') {
+      row.classList.add('completed');
+    }
+
+    row.addEventListener('click', () => {
+      if (!row.classList.contains('ongoing') && !row.classList.contains('completed')) {
+        row.classList.add('ongoing');
+        localStorage.setItem(taskId, 'ongoing');
+      } else if (row.classList.contains('ongoing')) {
+        row.classList.remove('ongoing');
+        row.classList.add('completed');
+        localStorage.setItem(taskId, 'completed');
+      } else {
+        row.classList.remove('completed');
+        localStorage.removeItem(taskId);
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
+<style>#lunch .act{color:#22c55e!important}#nap .act{color:#eab308!important}#dinner .act{color:#ef4444!important}</style>

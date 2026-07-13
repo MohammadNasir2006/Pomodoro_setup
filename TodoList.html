@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nasir's Premium Bold Todo - Clean Sans-Serif Edition</title>
+<style>
+  /* গুগলের সবচেয়ে পঠিতব্য এবং পরিষ্কার Sans-Serif ফন্ট 'Roboto' ইমপোর্ট করা হলো */
+  @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@700;900&display=swap');
+
+  html, body {
+    background-color: transparent; 
+    color: #ffffff;
+    /* একদম নিট অ্যান্ড ক্লিন Sans-Serif ফন্ট ফ্যামিলি */
+    font-family: 'Roboto', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; 
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    overflow: hidden; 
+  }
+
+  /* --- 🎨 মেইন কন্টেইনার --- */
+  .todo-container {
+    width: 100%;
+    max-width: 310px; 
+    height: 760px;   /* বা 800px */
+    background: linear-gradient(165deg, #070a13 0%, #0f172a 100%); 
+    border: 2px solid #1e293b;
+    border-radius: 8px;
+    padding: 6px; 
+    box-shadow: 0 20px 40px rgba(0,0,0,0.9);
+    box-sizing: border-box;
+    margin: 5px auto;
+  }
+
+  /* --- 👑 মেইন হেডлайн --- */
+  .main-headline {
+    font-size: 15px; 
+    font-weight: 900;
+    background: linear-gradient(90deg, #38bdf8, #ec4899, #00f2fe, #38bdf8);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    
+    background-color: rgba(30, 41, 59, 0.5);
+    border: 2px solid #3b82f6;
+    border-radius: 6px;
+    padding: 5px 0;
+    margin-top: 2px;
+    margin-bottom: 6px;
+    
+    animation: fastShine 2s linear infinite, glowPulse 2s infinite ease-in-out;
+  }
+
+  /* --- 🎬 ডেট + লাইভ ক্লক এরিয়া --- */
+  .title-wrapper {
+    background: rgba(15, 23, 42, 0.8); 
+    border: 1px solid rgba(51, 65, 85, 0.8);
+    border-radius: 5px;
+    padding: 6px 8px; 
+    margin-bottom: 4px; 
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    animation: dateTimeEngine 4s infinite ease-in-out;
+  }
+
+  .todo-title {
+    font-size: 12px; 
+    font-weight: 900;
+    color: #38bdf8;
+    text-transform: uppercase;
+  }
+
+  .live-clock {
+    font-size: 13px; 
+    font-weight: 900;
+    color: #00f2fe;
+    text-shadow: 0 0 8px rgba(0, 242, 254, 0.6);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* --- 📚 সাবজেক্ট প্যানেল --- */
+  .subject-wrapper {
+    background: rgba(23, 23, 67, 0.6); 
+    border: 1px solid rgba(99, 102, 241, 0.5); 
+    border-radius: 5px;
+    padding: 6px 6px;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    animation: subjectSoftEngine 5s infinite ease-in-out;
+  }
+
+  .subject-title {
+    font-size: 11px; 
+    font-weight: 900;
+    color: #a5b4fc;
+    text-transform: uppercase;
+  }
+
+  /* --- ইনপুট ও কন্ট্রোল এরিয়া --- */
+  .control-section {
+    background: rgba(15, 23, 42, 0.3);
+    padding: 4px;
+    border-radius: 5px;
+    margin-bottom: 6px;
+    border: 1px dashed rgba(51, 65, 85, 0.7);
+  }
+
+  .todo-input-container {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 3px;
+  }
+
+  .todo-input-container:last-child {
+    margin-bottom: 0;
+  }
+
+  #subject-input-box {
+    display: none; 
+  }
+
+  .todo-input {
+    font-family: inherit;
+    flex: 1;
+    background: #090d16;
+    border: 1px solid #334155;
+    border-radius: 4px;
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 5px 6px;
+    outline: none;
+    text-transform: uppercase; 
+  }
+  
+  .todo-input:focus {
+    border-color: #3b82f6;
+  }
+
+  .todo-add-btn {
+    font-family: inherit;
+    background: linear-gradient(90deg, #059669, #10b981);
+    border: none;
+    border-radius: 4px;
+    color: white;
+    font-size: 11px;
+    font-weight: 900;
+    padding: 0 12px;
+    cursor: pointer;
+  }
+
+  .subj-btn {
+    background: linear-gradient(90deg, #6366f1, #4f46e5);
+  }
+
+  /* --- 🔢 টাস্ক লিস্ট --- */
+  .todo-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 400px; 
+    overflow-y: auto;
+    counter-reset: task-counter; 
+  }
+
+  .todo-list::-webkit-scrollbar {
+    width: 4px;
+  }
+  .todo-list::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-radius: 2px;
+  }
+
+  .todo-item {
+    background: #131c31;
+    border-left: 4px solid #475569;
+    border: 1px solid transparent; 
+    border-radius: 4px;
+    padding: 6px 6px; 
+    margin-bottom: 5px; 
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px; 
+    font-weight: 700;
+    cursor: pointer;
+    user-select: none;
+    counter-increment: task-counter; 
+  }
+  
+  .todo-item::before {
+    content: counter(task-counter) ". "; 
+    color: #38bdf8; 
+    margin-right: 4px;
+    font-weight: 900;
+  }
+
+  .todo-text-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex: 1;
+    overflow: hidden;
+    padding-right: 4px;
+  }
+
+  .todo-text {
+    color: #ffffff; 
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-transform: uppercase; 
+  }
+
+  /* স্ট্যাটাস ট্যাগস */
+  .status-tag {
+    font-size: 9px;
+    font-weight: 900;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    border-radius: 3px;
+    display: none;
+    color: #ffffff;
+    letter-spacing: 0.5px;
+  }
+
+  /* ❌ INCOMPLETE STATE */
+  .todo-item.incomplete { 
+    border-left: 4px solid #ef4444; 
+  }
+  .todo-item.incomplete .tag-incomplete { 
+    display: inline-block; 
+    background: #dc2626; 
+  }
+
+  /* ⚡ ONGOING STATE */
+  .todo-item.ongoing { 
+    border-left: 4px solid #3b82f6;
+    background: #131c31 !important; 
+    animation: ongoingLightingBorder 1.5s infinite ease-in-out; 
+  }
+  .todo-item.ongoing .todo-text { 
+    color: #00f2fe; 
+    font-weight: 900; /* চলমান টাস্কটি আরও গাঢ় দেখাবে */
+  }
+  .todo-item.ongoing .tag-ongoing { 
+    display: inline-block; 
+    background: #2563eb; 
+    animation: textZikmik 1.5s infinite ease-in-out; 
+  }
+
+  /* ✅ COMPLETED STATE */
+  .todo-item.completed {
+    border-left: 4px solid #10b981;
+    background: #131c31; 
+  }
+  .todo-item.completed .todo-text {
+    color: #475569; 
+    text-decoration: line-through; 
+  }
+  .todo-item.completed .tag-completed { 
+    display: inline-block; 
+    background: #059669; 
+  }
+
+  .todo-del-btn {
+    background: transparent;
+    border: none;
+    color: #475569;
+    font-size: 15px;
+    cursor: pointer;
+    font-weight: 900;
+    padding: 0 4px;
+  }
+  .todo-del-btn:hover { color: #ef4444; }
+
+  /* --- 🎇 ANIMATION ENGINES --- */
+  
+  @keyframes ongoingLightingBorder {
+    0% {
+      border-color: rgba(56, 189, 248, 0.2);
+      box-shadow: 0 0 2px transparent;
+    }
+    50% {
+      border-color: rgba(56, 189, 248, 1); 
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.4); 
+    }
+    100% {
+      border-color: rgba(56, 189, 248, 0.2);
+      box-shadow: 0 0 2px transparent;
+    }
+  }
+
+  @keyframes textZikmik {
+    0% { opacity: 0.7; filter: brightness(0.8); }
+    50% { opacity: 1; filter: brightness(1.4); }
+    100% { opacity: 0.7; filter: brightness(0.8); }
+  }
+
+  @keyframes fastShine {
+    0% { background-position: 0% center; }
+    100% { background-position: 200% center; }
+  }
+
+  @keyframes glowPulse {
+    0% { border-color: #3b82f6; box-shadow: 0 0 4px rgba(59, 130, 246, 0.4); }
+    50% { border-color: #ec4899; box-shadow: 0 0 12px rgba(236, 72, 153, 0.7); }
+    100% { border-color: #3b82f6; box-shadow: 0 0 4px rgba(59, 130, 246, 0.4); }
+  }
+
+  @keyframes dateTimeEngine {
+    0% { border-color: rgba(51, 65, 85, 0.6); filter: brightness(0.9); }
+    50% { border-color: rgba(56, 189, 248, 0.7); filter: brightness(1.15); }
+    100% { border-color: rgba(51, 65, 85, 0.6); filter: brightness(0.9); }
+  }
+
+  @keyframes subjectSoftEngine {
+    0% { border-color: rgba(99, 102, 241, 0.3); }
+    50% { border-color: rgba(99, 102, 241, 0.7); }
+    100% { border-color: rgba(99, 102, 241, 0.3); }
+  }
+</style>
+</head>
+<body>
+
+<div class="todo-container">
+  <div class="main-headline">Nasir's Today Task</div>
+
+  <div class="title-wrapper">
+    <div class="todo-title" id="headline-date">LOADING DATE...</div>
+    <div class="live-clock" id="live-clock">00:00:00 PM</div>
+  </div>
+
+  <div class="subject-wrapper" id="subject-panel">
+    <div class="subject-title" id="subject-text">SUBJECT: NOT SET ANY YET</div>
+  </div>
+  
+  <div class="control-section">
+    <div class="todo-input-container">
+      <input type="text" id="todo-input" class="todo-input" placeholder="ENTER NEW TASK...">
+      <button id="todo-add-btn" class="todo-add-btn">ADD</button>
+    </div>
+    <div class="todo-input-container" id="subject-input-box">
+      <input type="text" id="subject-input" class="todo-input" placeholder="ENTER SUBJECTS...">
+      <button id="subject-set-btn" class="todo-add-btn subj-btn">SET</button>
+    </div>
+  </div>
+  
+  <ul id="todo-list" class="todo-list"></ul>
+</div>
+
+<script>
+  const todoInput = document.getElementById('todo-input');
+  const todoAddBtn = document.getElementById('todo-add-btn');
+  const todoList = document.getElementById('todo-list');
+  const headlineDate = document.getElementById('headline-date');
+  const liveClock = document.getElementById('live-clock');
+  
+  const subjectPanel = document.getElementById('subject-panel');
+  const subjectInputBox = document.getElementById('subject-input-box');
+  const subjectInput = document.getElementById('subject-input');
+  const subjectSetBtn = document.getElementById('subject-set-btn');
+  const subjectText = document.getElementById('subject-text');
+
+  function updateClockAndDate() {
+    const now = new Date();
+    const day = now.getDate();
+    const months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+    const monthName = months[now.getMonth()];
+    const days = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
+    const dayName = days[now.getDay()];
+    
+    headlineDate.innerText = `${day} ${monthName} ${dayName}`;
+
+    let hours = now.getHours();
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    
+    hours = hours % 12;
+    hours = hours ? hours : 12; 
+    const strTime = `${String(hours).padStart(2, '0')}:${minutes}:${seconds} ${ampm}`;
+    
+    liveClock.innerText = strTime;
+  }
+  
+  setInterval(updateClockAndDate, 1000);
+  updateClockAndDate();
+
+  let savedSubject = localStorage.getItem('nasir_stream_subject') || "NOT SET ANY YET";
+  subjectText.innerText = `SUBJECT: ${savedSubject.toUpperCase()}`;
+
+  subjectPanel.addEventListener('click', () => {
+    subjectInputBox.style.display = (subjectInputBox.style.display === "flex") ? "none" : "flex";
+    if(subjectInputBox.style.display === "flex") subjectInput.focus();
+  });
+
+  subjectSetBtn.addEventListener('click', () => {
+    const subVal = subjectInput.value.trim();
+    if (subVal !== "") {
+      localStorage.setItem('nasir_stream_subject', subVal);
+      subjectText.innerText = `SUBJECT: ${subVal.toUpperCase()}`;
+      subjectInput.value = "";
+    }
+    subjectInputBox.style.display = "none"; 
+  });
+
+  let tasks = JSON.parse(localStorage.getItem('nasir_stream_tasks')) || [];
+
+  function saveTasks() {
+    localStorage.setItem('nasir_stream_tasks', JSON.stringify(tasks));
+  }
+
+  function renderTasks() {
+    todoList.innerHTML = '';
+    tasks.forEach((task, index) => {
+      const li = document.createElement('li');
+      li.className = `todo-item ${task.state || 'incomplete'}`;
+      
+      const wrapper = document.createElement('div');
+      wrapper.className = 'todo-text-wrapper';
+
+      const textSpan = document.createElement('span');
+      textSpan.className = 'todo-text';
+      textSpan.innerText = task.text;
+
+      const incompleteTag = document.createElement('span');
+      incompleteTag.className = 'status-tag tag-incomplete';
+      incompleteTag.innerText = 'Incomplete';
+
+      const ongoingTag = document.createElement('span');
+      ongoingTag.className = 'status-tag tag-ongoing';
+      ongoingTag.innerText = 'Ongoing';
+
+      const completedTag = document.createElement('span');
+      completedTag.className = 'status-tag tag-completed';
+      completedTag.innerText = 'Completed'; 
+
+      wrapper.appendChild(textSpan);
+      wrapper.appendChild(incompleteTag);
+      wrapper.appendChild(ongoingTag);
+      wrapper.appendChild(completedTag);
+
+      li.addEventListener('click', () => {
+        if (!task.state || task.state === 'incomplete') {
+          task.state = 'ongoing';
+        } else if (task.state === 'ongoing') {
+          task.state = 'completed';
+        } else {
+          task.state = 'incomplete';
+        }
+        saveTasks();
+        renderTasks();
+      });
+
+      const delBtn = document.createElement('button');
+      delBtn.className = 'todo-del-btn';
+      delBtn.innerHTML = '&times;';
+      delBtn.addEventListener('click', (e) => {
+        e.stopPropagation(); 
+        tasks.splice(index, 1);
+        saveTasks();
+        renderTasks();
+      });
+
+      li.appendChild(wrapper);
+      li.appendChild(delBtn);
+      todoList.appendChild(li);
+    });
+  }
+
+  function addTask() {
+    const text = todoInput.value.trim();
+    if (text !== '') {
+      tasks.push({ text: text, state: 'incomplete' });
+      todoInput.value = '';
+      saveTasks();
+      renderTasks();
+    }
+  }
+
+  todoAddBtn.addEventListener('click', addTask);
+  todoInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') addTask();
+  });
+
+  renderTasks();
+</script>
+
+</body>
+</html>

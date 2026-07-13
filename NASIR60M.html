@@ -1,0 +1,1424 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nasir's RPG Routine Widget</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Roboto:wght=500;700;900&display=swap');
+
+  html, body {
+    background-color: transparent; 
+    color: #ffffff;
+    font-family: 'Roboto', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  .widget-container {
+    display: inline-block;
+    padding: 20px 24px;
+    background: linear-gradient(135deg, rgba(8, 12, 24, 0.98) 0%, rgba(3, 4, 9, 0.96) 100%);
+    border: 1px solid rgba(0, 242, 254, 0.2);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.95), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    min-width: 400px;
+    text-align: left;
+    margin: 15px;
+    position: relative;
+  }
+
+  .game-container {
+    background: linear-gradient(90deg, rgba(124, 58, 237, 0.2), rgba(0, 242, 254, 0.1));
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    padding: 14px;
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .game-stats { display: flex; flex-direction: column; gap: 2px; }
+  .game-title { font-size: 11px; font-weight: 900; color: #a38ce6d3; text-transform: uppercase; letter-spacing: 0.5px; }
+  .game-level { font-size: 20px; font-weight: 900;letter-spacing: 2px; color: #00ff87; text-shadow: 0 0 8px rgba(0, 255, 136, 0.171); }
+  .game-xp { font-size: 20px; font-weight: 900; color: #f6f7f8; letter-spacing: 2px; }
+
+  .routine-status-panel {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    padding: 12px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+  }
+  .status-item { display: flex; flex-direction: column; }
+  .status-label { font-size: 12px; color: #9eadc2; text-transform: uppercase; font-weight: 800; letter-spacing: 0.5px; margin-bottom: 2px; }
+  .status-value { font-size: 14px; font-weight: 900; }
+  .milestone-label { font-size: 12px; color: #bdc9da; text-transform: uppercase; font-weight: 800; margin-bottom: 2px; }
+  .milestone-value { font-size: 13px; font-weight: 900; }
+
+  #display-timeline { color: #02c0fa; text-shadow: 0 0 8px rgba(0, 240, 255, 0.4); }
+  #display-target { color: #00ff87; text-shadow: 0 0 8px rgba(0, 255, 135, 0.4); }
+  #display-milestones { color: #00ffd5; text-shadow: 0 0 8px rgba(0, 238, 255, 0.226); }
+
+  .session-header { font-size: 26px; font-weight: 900; color: #ffaa00; text-transform: uppercase; margin-bottom: 2px; text-shadow: 0 0 15px rgba(255, 170, 0, 0.4); }
+  .timer-display { font-size: 34px; font-weight: 900; font-variant-numeric: tabular-nums; line-height: 1.1; margin-bottom: 4px; }
+  .state-force { color: #00f1fe; text-shadow: 5px 5px 15px rgba(129, 242, 254, 0.5); }
+  .state-break { color: #ff0055; text-shadow: 5px 5px 15px rgba(255, 0, 85, 0.5); }
+
+  .panic-box {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 6px;
+    margin-bottom: 4px;
+  }
+
+
+  #discipline-tip{
+  margin-top:10px;
+  margin-bottom:5px;
+  text-align:center;
+
+  font-family:'Segoe UI',sans-serif;
+  font-size:15px;
+  font-weight:800;
+
+  color:#e2e8f0ee;
+  line-height:1.5;
+
+  padding:10px 10px;
+
+  background:rgba(255, 255, 255, 0.137);
+  border:1px solid rgba(255,255,255,0.05);
+  border-radius:10px;
+
+  transition:opacity .5s ease;
+
+  min-height:30px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+
+
+  .btn-panic {
+    background: linear-gradient(90deg, #dc2626, #991b1b);
+    border: 1px solid #ef4444;
+    color: white;
+    padding: 8px 0;
+    border-radius: 6px;
+    font-family: inherit;
+    font-weight: 900;
+    font-size: 11px;
+    text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(220, 38, 38, 0.4);
+    transition: all 0.2s ease;
+  }
+  .btn-panic:hover { filter: brightness(1.2); box-shadow: 0 0 15px rgba(239, 68, 68, 0.8); }
+  
+  .btn-penalty {
+    background: linear-gradient(90deg, #7f1d1d, #450a0a);
+    border: 1px solid #ef4444;
+    color: #fca5a5;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 900;
+    font-size: 11px;
+    text-transform: uppercase;
+    transition: all 0.2s ease;
+  }
+  .btn-penalty:hover { background: #991b1b; color: #ffffff; box-shadow: 0 0 10px rgba(220, 38, 38, 0.4); }
+
+  .btn-spark {
+    background: linear-gradient(135deg, #7c3aed, #4c1d95);
+    border: 1px solid #a78bfa;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 900;
+    font-size: 14px;
+  }
+  .btn-spark:hover { filter: brightness(1.2); box-shadow: 0 0 10px #7c3aed; }
+
+  .control-panel {
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px dashed rgba(255, 255, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    opacity: 0; 
+    max-height: 0;
+    overflow: hidden;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .widget-container:hover .control-panel { opacity: 1; max-height: 800px; }
+
+  .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .input-row { display: flex; flex-direction: column; gap: 2px; }
+  .input-row label { font-size: 10px; font-weight: 900; color: #94a3b8; text-transform: uppercase; }
+  .control-input { background: #060911; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 6px; color: #ffffff; font-size: 12px; font-weight: 700; padding: 6px 8px; outline: none; }
+  .btn-group { display: flex; gap: 4px; margin-top: 2px; }
+  
+  .control-btn { flex: 1; font-family: inherit; border: none; border-radius: 6px; color: white; font-size: 11px; font-weight: 900; padding: 8px 0; cursor: pointer; text-transform: uppercase; transition: all 0.2s; }
+  .btn-force-mode { background: linear-gradient(90deg, #00c6ff, #0072ff); }
+  .btn-break-mode { background: linear-gradient(90deg, #ff007f, #aa0055); }
+  .btn-start { background: linear-gradient(90deg, #059669, #10b981); }
+  .btn-pause { background: linear-gradient(90deg, #d97706, #f59e0b); }
+  .btn-reset { background: linear-gradient(90deg, #3b82f6, #1d4ed8); }
+  .control-btn:hover { filter: brightness(1.2); }
+
+  .motivation-player-box { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 8px; padding: 8px; }
+  .motivation-title { font-size: 10px; font-weight: 900; color: #00f2fe; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; display: block; text-align: center; }
+  .quote-btn-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+  .quote-num-btn { background: #1e293b; border: 1px solid rgba(255,255,255,0.1); color: #ffffff; font-weight: 900; font-size: 12px; padding: 6px 0; border-radius: 5px; cursor: pointer; }
+  .quote-num-btn:hover { background: #ffaa00; color: #000000; box-shadow: 0 0 8px #ffaa00; }
+  .quote-num-btn.special-btn { background: #7c2d12; border-color: rgba(255,170,0,0.2); }
+  .quote-num-btn.special-btn:hover { background: #ea580c; color: #ffffff; }
+  .quote-num-btn.ultra-btn { background: #1e1b4b; border-color: #4f46e5; color: #38bdf8; grid-column: span 2; }
+  .quote-num-btn.ultra-btn:hover { background: #4f46e5; color: #ffffff; box-shadow: 0 0 12px #4f46e5; }
+
+
+/* Extra RPG animations */
+
+
+/*#goalBox {
+  animation:
+    goalGlow 2.5s ease-in-out infinite,
+    floatGoal 4s ease-in-out infinite;
+}
+
+@keyframes floatGoal {
+  0%,100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+*/
+
+#goalBox{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:10px;
+margin:10px 0;
+padding:0;
+width:100%;
+box-sizing:border-box;
+}
+
+#goalBox:has(.goal-card:only-child){
+grid-template-columns:1fr;
+}
+
+.goal-card{
+width:100%;
+box-sizing:border-box;
+padding:4px 2px;
+border-radius:10px;
+background:rgba(255,255,255,.04);
+border:1px solid rgba(255,255,255,.06);
+
+/* গুরুত্বপূর্ণ fix */
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+min-width:0;
+}
+
+.goal-card span{
+white-space:nowrap;
+overflow:hidden;
+text-overflow:ellipsis;
+}
+
+.goal-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+}
+
+.goal {
+  width: 48%;
+}
+
+.goal-name{
+display:block;
+font-size:16.5px;
+font-weight:900;
+color:#ffffff;
+animation:goalWhite 4s ease-in-out infinite;
+}
+
+.goal-done{
+display:block;
+font-size:14px;
+margin-top:6px;
+font-weight:800;
+color:#22c55e;
+animation:goalGreen 4s ease-in-out infinite;
+}
+
+.goal-left{
+display:block;
+font-size:13.5px;
+margin-top:4px;
+font-weight:800;
+color:#f59e0b;
+animation:goalOrange 4s ease-in-out infinite;
+}
+.goal-target{
+display:block;
+font-size:13.5px;
+margin-top:4px;
+font-weight:900;
+color:#a78bfa;
+animation:goalWhite 4s ease-in-out infinite;
+}
+
+.goal-progress{
+display:block;
+font-size:13.5px;
+margin-top:4px;
+font-weight:900;
+color:#38bdf8;
+animation:goalBlue 4s ease-in-out infinite;
+}
+
+.goal-status{
+display:block;
+margin-top:6px;
+
+font-size:11px;
+font-weight:700;
+
+font-family:'Inter','Segoe UI',sans-serif;
+letter-spacing:1.2px;
+text-transform:uppercase;
+}
+
+.status-running{
+color:#34d399;
+animation:premiumRunning 2.8s ease-in-out infinite;
+}
+
+.status-pending{
+color:#fbbf24;
+animation:premiumPending 3s ease-in-out infinite;
+}
+
+@keyframes premiumRunning{
+
+0%,100%{
+opacity:.65;
+transform:translateY(0);
+letter-spacing:1.2px;
+}
+
+50%{
+opacity:1;
+transform:translateY(-1px);
+letter-spacing:2px;
+}
+}
+
+@keyframes premiumPending{
+
+0%,100%{
+opacity:.5;
+}
+
+50%{
+opacity:1;
+text-shadow:0 0 10px rgba(251,191,36,.6);
+}
+}
+
+
+
+
+.goal-name{
+display:block;
+font-size:19px;
+letter-spacing: 1.4px;
+font-weight:900;
+color:#fffffff1;
+animation:goalNameGlow 3s ease-in-out infinite;
+}
+
+.goal-done{
+display:block;
+font-size:17px;
+margin-top:5px;
+font-weight:900;
+color:#4ade80;
+animation:goalDonePulse 2.8s ease-in-out infinite;
+}
+
+.goal-left{
+display:block;
+font-size:17px;
+margin-top:4px;
+font-weight:900;
+color:#fbbf24;
+animation:goalLeftPulse 2.8s ease-in-out infinite;
+}
+
+.goal-target{
+display:block;
+font-size:17px;
+margin-top:4px;
+font-weight:900;
+color:#b678f5;
+animation:goalTargetPulse 3s ease-in-out infinite;
+}
+
+.goal-progress{
+display:block;
+font-size:17px;
+margin-top:4px;
+font-weight:900;
+color:#38bdf8;
+animation:goalProgressPulse 2.5s ease-in-out infinite;
+}
+
+
+
+@keyframes goalWhite{50%{text-shadow:0 5px 18px #fff;}}
+@keyframes goalGreen{50%{text-shadow:0 5px 18px #22c55e;}}
+@keyframes goalOrange{50%{text-shadow:0 5px 18px #f59e0b;}}
+@keyframes goalBlue{50%{text-shadow:0 5px 18px #38bdf8;}}
+
+#streak-title-display{
+animation:goalWhite 4s ease-in-out infinite;
+font-weight:900;
+letter-spacing:.8px;
+}
+
+</style>
+</head>
+<body>
+
+<div class="widget-container" id="main-container">
+  
+  <div class="progress-container">
+    <div class="progress-bar" id="live-progress"></div>
+  </div>
+  
+
+  <div class="game-container" style="margin-top:12px;">
+    <div class="game-stats">
+      <span class="game-title">ACTIVE GOAL</span>
+    
+      <span class="game-level" id="streak-display">
+        1 DAYS
+      </span>
+    
+      <span id="goal-date-display"
+      style="
+        font-size:13px;
+        font-weight:800;
+        color:#9aa8bd;
+      ">
+        -
+      </span>
+    </div>
+    
+    <span class="game-xp" id="streak-title-display">
+      NO STREAK
+    </span>
+  </div>
+
+  <div id="goalBox"
+  style="
+  margin-top:12px;
+  margin-bottom:16px;
+  font-size:15px;
+  font-weight:800;
+  text-align:center;
+  line-height:1.7;
+  font-family:'Segoe UI',Roboto,sans-serif;
+  letter-spacing:0.5px;
+  ">
+  No Goals Yet
+  </div>
+
+<div class="routine-status-panel">
+
+    <div class="status-item">
+      <span class="status-label">📅 Day Timeline</span>
+      <span class="status-value" id="display-timeline">10:10 AM - 03:50 AM</span>
+    </div>
+    <div class="status-item">
+      <span class="status-label">🎯 Target Total</span>
+      <span class="status-value" id="display-target">14 SESSIONS (60/10)</span>
+    </div>
+    <div class="status-item" style="grid-column: span 2; border-top: 2px solid rgba(255, 255, 255, 0.098); padding-top: 6px; margin-top: 10px;">
+      <span class="milestone-label">🍱ALL Breaks (Lunch | Rest | Dinner)</span>
+      <span class="milestone-value" id="display-milestones">Lunch: S3 (20m) | Rest: S7 (45m) | Dinner: S10 (20m)</span>
+    </div>
+  </div>
+
+  <div class="session-header" id="session-display">SESSION 0/14</div>
+  
+  <div class="timer-display state-force" id="timer-display">FORCE TIME: 60:00</div>
+
+  <div id="discipline-tip">
+    Loading wisdom...
+    </div>
+
+
+  <div class="control-panel">
+    <div class="input-grid">
+      <div class="input-row">
+        <label>Current Session:</label>
+        <input type="text" id="session-input" class="control-input" value="0" disabled>
+      </div>
+      <div class="input-row">
+        <label>Set Time (m) [Min 60m Lock]:</label>
+        <input type="number" id="time-input" class="control-input" value="60" min="60">
+      </div>
+    </div>
+    <div class="input-grid">
+      <div class="input-row">
+        <label>Day Start Time:</label>
+        <input type="text" id="start-time-input" class="control-input" value="6:30 AM">
+      </div>
+      <div class="input-row">
+        <label>Day End Time:</label>
+        <input type="text" id="end-time-input" class="control-input" value="11:55 AM">
+      </div>
+    </div>
+    <div class="input-row">
+      <label>Breaks Description:</label>
+      <input type="text" id="milestones-input" class="control-input" value="LUNCH: S6 (25m) | REST: S7 (40m) | DINNER: S12 (30m)">
+    </div>
+    <div class="motivation-player-box">
+      <span class="motivation-title">⚡ Instant Discipline Booster</span>
+      <div class="quote-btn-grid">
+        <button class="quote-num-btn" onclick="playSelectedQuote(1)">1</button>
+        <button class="quote-num-btn" onclick="playSelectedQuote(2)">2</button>
+        <button class="quote-num-btn" onclick="playSelectedQuote(3)">3</button>
+        <button class="quote-num-btn" onclick="playSelectedQuote(4)">4</button>
+        <button class="quote-num-btn" onclick="playSelectedQuote(5)">5</button>
+        <button class="quote-num-btn" onclick="playSelectedQuote(6)">6</button>
+        <button class="quote-num-btn" onclick="playSelectedQuote(7)">7</button>
+        <button class="quote-num-btn" onclick="playSelectedQuote(8)">8</button>
+        <button class="quote-num-btn" onclick="playSelectedQuote(9)">9</button>
+        <button class="quote-num-btn" onclick="playSelectedQuote(10)">10</button>
+        <button class="quote-num-btn special-btn" onclick="playSelectedQuote(11)">11</button>
+        <button class="quote-num-btn special-btn" onclick="playSelectedQuote(12)">12</button>
+        <button class="quote-num-btn ultra-btn" onclick="playSelectedQuote(13)">🔥 13</button>
+      </div>
+    </div>
+    <div class="btn-group">
+      <button id="btn-set-force" class="control-btn btn-force-mode">Force Mode</button>
+      <button id="btn-set-break" class="control-btn btn-break-mode">Break Mode</button>
+    </div>
+    <div class="btn-group">
+      <button id="btn-start" class="control-btn btn-start">Start</button>
+      <button id="btn-pause" class="control-btn btn-pause">Pause</button>
+      <button id="btn-reset" class="control-btn btn-reset">Reset</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // JavaScript Integration
+
+
+
+  /* localStorage.setItem("currentSessionCount", 0); */
+
+
+
+  const mainContainer = document.getElementById('main-container');
+  const liveProgress = document.getElementById('live-progress');
+  const gameLevelDisplay = document.getElementById('game-level-display');
+  const gameXpDisplay = document.getElementById('game-xp-display');
+  const sessionDisplay = document.getElementById('session-display');
+  const timerDisplay = document.getElementById('timer-display');
+  const sessionInput = document.getElementById('session-input');
+  const timeInput = document.getElementById('time-input');
+  const startTimeInput = document.getElementById('start-time-input');
+  const endTimeInput = document.getElementById('end-time-input');
+  const milestonesInput = document.getElementById('milestones-input');
+  const displayTimeline = document.getElementById('display-timeline');
+  const displayTarget = document.getElementById('display-target');
+  const displayMilestones = document.getElementById('display-milestones');
+  const btnSetForce = document.getElementById('btn-set-force');
+  const btnSetBreak = document.getElementById('btn-set-break');
+  const btnStart = document.getElementById('btn-start');
+  const btnPause = document.getElementById('btn-pause');
+  const btnReset = document.getElementById('btn-reset');
+  const streakDisplay = document.getElementById('streak-display');
+  const streakTitleDisplay = document.getElementById('streak-title-display');
+  const goalDateDisplay =
+document.getElementById('goal-date-display');
+  
+  // New Progress Elements
+  const germanyProgressDisplay = document.getElementById('germany-progress');
+  const duProgressDisplay = document.getElementById('du-progress');
+  const totalHoursDisplay = document.getElementById('total-hours-display');
+  const trackingSinceDisplay = document.getElementById('tracking-since-display');
+
+  let countdownInterval = null;
+  let totalSeconds = 60 * 60; 
+  let maxSeconds = 60 * 60;
+  let forceCompleted = false;
+  let isCounting = false;
+  let currentMode = 'FORCE'; 
+  
+  // Total Lifetime Sessions for Long-term Goals Progress
+  let totalLifetimeSessions = parseInt(localStorage.getItem("totalLifetimeSessions")) || 0;
+  let currentSessionCount = parseInt(localStorage.getItem("currentSessionCount")) || 0;
+  let playerXP = parseInt(localStorage.getItem("playerXP")) || 0;
+  let playerLevel = parseInt(localStorage.getItem("playerLevel")) || 1;
+  let streakDays = parseInt(localStorage.getItem("streakDays")) || 0;
+
+  let totalHours = parseInt(localStorage.getItem("totalHours")) || 0;
+  let totalMinutes = parseInt(localStorage.getItem("totalMinutes")) || 0;
+
+  if (!localStorage.getItem("hoursTrackingSince")) {
+      localStorage.setItem("hoursTrackingSince", "17 Jun 2026");
+  }
+  // 180 days * 14 sessions/hours = 2520 Total Target Hours
+  const TOTAL_TARGET_SESSIONS = 2520;
+
+  function checkAndReset() {
+      const now = new Date();
+      const lastReset = localStorage.getItem("lastResetDate");
+      const today = now.toDateString();
+      
+      if (now.getHours() >= 4 && lastReset !== today) {
+          if (currentSessionCount < 10) streakDays = 0;
+          currentSessionCount = 0;
+          playerXP = 0;
+          playerLevel = 1;
+          localStorage.setItem("lastResetDate", today);
+          saveAll();
+      }
+  }
+
+  function saveAll() {
+      localStorage.setItem("totalLifetimeSessions", totalLifetimeSessions);
+      localStorage.setItem("currentSessionCount", currentSessionCount);
+      localStorage.setItem("playerXP", playerXP);
+      localStorage.setItem("playerLevel", playerLevel);
+      localStorage.setItem("streakDays", streakDays);
+  }
+
+  const levelTitles = {
+    1: "DISCIPLINE", 2: "CONSISTENCY", 3: "FOCUS MASTER", 4: "UNSTOPPABLE", 5: "LEGEND MIND"
+  };
+
+  const worldFamousQuotes = {
+    1: "Cristiano Ronaldo says: Discipline is the key. Without hard work and dedication, talent is absolutely nothing.",
+    2: "Kobe Bryant says: I cannot relate to lazy people. We do not speak the same language. Wake up and work hard!",
+    3: "Elon Musk says: Work like hell. If other people are putting in 40 hours and you put in 100 hours, you will achieve your goals much faster.",
+    4: "Dwayne Johnson, the Rock says: Success is not always about greatness. It is about consistency. Consistent hard work leads to massive success.",
+    5: "Arnold Schwarzenegger says: The mind is the limit. As long as the mind can envision the fact that you can do something, you can do it.",
+    6: "Muhammad Ali says: I hated every minute of training, but I said, Do not quit. Suffer now and live the rest of your life as a champion.",
+    7: "Lionel Messi says: You have to fight to reach your dream. You have to sacrifice and work hard for it.",
+    8: "Mike Tyson says: Discipline is doing what you hate to do, but nonetheless doing it like you love it.",
+    9: "David Goggins says: From the time you wake up to the time you go to sleep, you should be grinding. Stay disciplined!",
+    10: "Bruce Lee says: The successful warrior is the average man, with laser like focus.",
+    11: "Nasir, you must get a chance at Dhaka University. Work hard and you will surely succeed. No one is a robot or an alien, everyone is working hard just like you and that is why they get a chance. If you do not work, you will not make it. Achieve your goals, and you can give your parents whatever they desire. So turn off social media for 6 months, give time to yourself, and your next 50 years will be beautiful.",
+    12: "Nasir, whether you are learning Software Engineering, German language, or any skill, you must put in the effort. If you can work hard consistently for 6 months to 1 year, you will definitely be successful one day. Everyone starts just like this, and those who stay committed are the ones who succeed.",
+    13: "Nasir, focus! Your hard work right now will wipe away all of your mother's struggles and pain. Remember every relative, and every person you loved who let you down, tricked you, or walked away. One day, when you stand completely successful, they will all look back and deeply regret losing you. Keep grinding, crush your goals, and absolutely nothing can stop you from stepping into your dream lands, Germany and America! Win this battle!"
+  };
+
+  const panicAlertQuotes = [
+    "Nasir! Close that distraction right now! Are you going to let your dreams slide away for temporary cheap dopamine? Get back to work!",
+    "Hey Nasir, wake up! Nobody is going to build your career for you. Put down the phone, cut social media, and focus!",
+    "Nasir, remember the 6-month sacrifice for the next fifty years of your life! Do not touch that distraction, keep grinding!",
+    "David Goggins is watching you, Nasir! Don't be soft! Suffer now, stay disciplined, and crush this session!"
+  ];
+
+  const stoicQuotes = [
+    "Marcus Aurelius says: You have power over your mind, not outside events. Realize this, and you will find strength, Nasir.",
+    "Seneca says: We suffer more often in imagination than in reality. Stop overthinking and do the work, Nasir.",
+    "Epictetus says: First say to yourself what you would be; and then do what you have to do.",
+    "Discipline rule: Small disciplines repeated with consistency every day lead to great achievements. Stay on the path."
+  ];
+
+  function applyPenalty() {
+    playerXP -= 20;
+    if (playerXP < 0) {
+      if (playerLevel > 1) {
+        playerLevel--;
+        playerXP = 90;
+      } else {
+        playerXP = 0;
+      }
+    }
+    updateGameUI();
+    saveAll();
+    if(gameXpDisplay){
+ gameXpDisplay.style.color = "#ff0055";
+ setTimeout(() => { gameXpDisplay.style.color = "#e2e8f0"; }, 500);
+}
+  }
+
+  function playSelectedQuote(num) {
+    if (!('speechSynthesis' in window)) return;
+    window.speechSynthesis.cancel(); 
+    const utterance = new SpeechSynthesisUtterance(worldFamousQuotes[num]);
+    configureUtterance(utterance);
+    window.speechSynthesis.speak(utterance);
+  }
+
+  function triggerPanicDiscipline() {
+    if (!('speechSynthesis' in window)) return;
+    window.speechSynthesis.cancel();
+    mainContainer.style.borderColor = "#ef4444";
+    setTimeout(() => { mainContainer.style.borderColor = currentMode === 'FORCE' ? "rgba(0, 242, 254, 0.2)" : "rgba(255, 0, 85, 0.2)"; }, 3000);
+    const utterance = new SpeechSynthesisUtterance(panicAlertQuotes[Math.floor(Math.random() * panicAlertQuotes.length)]);
+    configureUtterance(utterance);
+    window.speechSynthesis.speak(utterance);
+  }
+
+  function playRandomSpark() {
+    if (!('speechSynthesis' in window)) return;
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(stoicQuotes[Math.floor(Math.random() * stoicQuotes.length)]);
+    configureUtterance(utterance);
+    window.speechSynthesis.speak(utterance);
+  }
+
+  
+  function playAutoMotivation(){
+
+if(!('speechSynthesis' in window)) return;
+
+window.speechSynthesis.cancel();
+
+let msg = "";
+
+if(currentMode === 'FORCE'){
+
+  msg =
+  "Excellent work, Nasir. Another session is complete. While thousands of people wasted the last sixty minutes scrolling social media, you invested it in building your future. Every line of code you write brings you closer to becoming a software engineer. Every session moves you one step closer to Dhaka University, one step closer to Germany, Norway, America or Australia. One day your dream girl will see the man who never gave up. Take your short break, recover, and come back stronger. Winners are built one session at a time.";
+
+}else{
+
+msg =
+"Break time is over Nasir. Session " + (currentSessionCount + 1) + " is starting now. This is not the time to be comfortable. While others are wasting hours, you are building your future. Every line of code you learn, every hour you study, every session you complete is taking you one step closer to becoming a successful software engineer. Germany is not built in one day. America is not reached in one day. Richest man is not conquered in one day. They are earned one session at a time. Stay locked in. Stay focused. Stay disciplined. Let's win this session.";
+
+}
+
+const u = new SpeechSynthesisUtterance(msg);
+
+configureUtterance(u);
+
+u.rate = 0.88;
+u.pitch = 1;
+u.volume = 1;
+
+window.speechSynthesis.speak(u);
+
+}
+
+function configureUtterance(utterance) {
+    utterance.volume = 1.0; utterance.rate = 0.95; utterance.pitch = 1.0;
+    const voices = window.speechSynthesis.getVoices();
+    const englishVoice = voices.find(voice => voice.lang.includes('en-US') || voice.lang.includes('en-GB'));
+    if (englishVoice) utterance.voice = englishVoice;
+  }
+
+  function awardXP() {
+
+    totalMinutes += parseInt(timeInput.value);
+    if(totalMinutes >= 60){
+      totalHours += Math.floor(totalMinutes / 60);
+      totalMinutes = totalMinutes % 60;
+      localStorage.setItem("totalHours", totalHours);
+      localStorage.setItem("totalMinutes", totalMinutes);
+    }
+
+    playerXP += 30; 
+    if (playerXP >= 100) { playerXP -= 100; if (playerLevel < 5) playerLevel++; }
+    updateGameUI();
+    saveAll();
+  }
+
+  function updateStreak(){
+    if(currentSessionCount >= 12){
+      if(localStorage.getItem("lastStreakDay") !== new Date().toDateString()) {
+        streakDays++;
+        localStorage.setItem("lastStreakDay", new Date().toDateString());
+        saveAll();
+      }
+    } else if(currentSessionCount < 10) {
+        streakDays = 0;
+        saveAll();
+    }
+    updateStreakUI();
+  }
+
+  function updateStreakUI(){
+    streakDisplay.innerText = `${streakDays} DAYS`;
+    let title = "NO STREAK";
+    if(streakDays >= 30) title = "LEGEND MODE";
+    else if(streakDays >= 7) title = "IRON WARRIOR";
+    else if(streakDays >= 1) title = "FIRST FLAME";
+    streakTitleDisplay.innerText = title;
+  }
+
+  function updateGameUI() {
+    if(gameLevelDisplay){
+      gameLevelDisplay.innerText = `Level ${playerLevel}: ${levelTitles[playerLevel] || "LEGEND RISING"}`;
+    }
+
+    if(gameXpDisplay){
+      gameXpDisplay.innerText = `XP: ${playerXP} / 100`;
+    }
+}
+
+  /* function updateLongTermProgress() {
+    // Percentage calculation based on total 2520 sessions (180 days * 14 sessions)
+    let percentage = (totalLifetimeSessions / TOTAL_TARGET_SESSIONS) * 100;
+    
+    // Limits the output to 2 decimal spaces for smooth 1.05%, 1.12% increments
+    let formattedPercentage = percentage.toFixed(6) + "%";
+    
+    germanyProgressDisplay.innerText = formattedPercentage;
+    duProgressDisplay.innerText = formattedPercentage;
+  } */
+
+
+
+
+  
+  function updateLongTermProgress() {
+    let totalStudyHours = totalHours + (totalMinutes / 60);
+    let percentage = (totalStudyHours / TOTAL_TARGET_SESSIONS) * 100;
+    let formattedPercentage = percentage.toFixed(6) + "%";
+    if(germanyProgressDisplay) germanyProgressDisplay.innerText = formattedPercentage;
+    duProgressDisplay.innerText = formattedPercentage;
+}
+  
+
+
+
+
+
+  function updateUI() {
+
+    if(totalHoursDisplay){
+      totalHoursDisplay.innerText = `${totalHours}h ${totalMinutes}m`;
+    }
+    if(trackingSinceDisplay){
+      trackingSinceDisplay.innerText = localStorage.getItem("hoursTrackingSince");
+    }
+
+    const sessionPercent =
+Math.floor((currentSessionCount / 14) * 100);
+
+sessionDisplay.innerText =
+`SESSION ${currentSessionCount}/14 (${sessionPercent}%)`;
+    sessionInput.value = currentSessionCount;
+    displayTimeline.innerText = `${startTimeInput.value} - ${endTimeInput.value}`;
+    displayMilestones.innerText = milestonesInput.value;
+    const percentage = maxSeconds > 0 ? (totalSeconds / maxSeconds) * 100 : 0;
+    liveProgress.style.width = `${percentage}%`;
+    if (currentMode === 'FORCE') {
+      timerDisplay.className = 'timer-display state-force';
+      timerDisplay.innerText = `FORCE TIME: ${formatTime(totalSeconds)}`;
+      liveProgress.style.background = "linear-gradient(90deg, #00f2fe, #00ff87)";
+    } else {
+      timerDisplay.className = 'timer-display state-break';
+      timerDisplay.innerText = `BREAK TIME: ${formatTime(totalSeconds)}`;
+      liveProgress.style.background = "linear-gradient(90deg, #ff0055, #ff007f)";
+    }
+    updateLongTermProgress();
+  }
+
+  function formatTime(s) { return `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`; }
+
+  
+  
+
+  const disciplineTips = [
+"প্রতিটি ৬০ মিনিটের সেশন তোমাকে সফলতার আরও কাছে নিয়ে যাচ্ছে।",
+"Facebook অপেক্ষা করতে পারবে, তোমার স্বপ্ন নয়।",
+"আজকে অলসতা করলে, আগামীকাল একই জায়গায় থাকবে।",
+"তোমার ভবিষ্যৎ আজকের সিদ্ধান্তের উপর দাঁড়িয়ে আছে।",
+"আজকের কষ্টই আগামী দিনের শান্তি।",
+"সোশ্যাল মিডিয়া নয়, স্কিল তোমার জীবন বদলাবে।",
+"শৃঙ্খলা ছাড়া স্বপ্ন শুধু কল্পনা।",
+"যতক্ষণ না সফল হচ্ছ, ততক্ষণ থেমো না।",
+"ফোকাসই তোমার সবচেয়ে বড় শক্তি।",
+"আজ যা করবে, আগামীকাল সেটার ফল পাবে।",
+"স্বপ্ন নয়, পরিশ্রমই জীবন বদলায়।",
+"প্রতিটি ঘণ্টা তোমার ভবিষ্যৎ গড়ছে।",
+"আজকের ঘাম আগামী দিনের সম্মান।",
+"আল্লাহ কোনো জাতির অবস্থা পরিবর্তন করেন না, যতক্ষণ না তারা নিজেরা নিজেদের পরিবর্তন করে। — সূরা আর-রা'দ ১৩:১১",
+"আল্লাহর উপর ভরসা করো, তারপর সর্বোচ্চ চেষ্টা করো।",
+"শৃঙ্খলা ছাড়া সফলতা আসে না।",
+"আজকের পরিশ্রম, আগামী দিনের মায়ের শান্তি।",
+"মায়ের দোয়া আর নিজের পরিশ্রম—এই দুইটাই তোমার সবচেয়ে বড় শক্তি।",
+"তোমার বাবা চাইতেন তুমি মানুষ হও। আজকের সেশনটা তাঁর সেই স্বপ্নের জন্য।",
+"অলসতা স্বপ্ন কেড়ে নেয়।",
+"প্রতিটি মিনিট মূল্যবান।",
+"ভবিষ্যৎ নিয়ে দুশ্চিন্তা নয়, আজকের কাজ নিয়ে ব্যস্ত থাকো।",
+"অতীত পরিবর্তন করা যায় না, কিন্তু ভবিষ্যৎ এখনো তোমার হাতে।",
+"রিলস শেষ হবে, কিন্তু হারানো সময় আর ফিরে আসবে না।",
+"তোমার ভবিষ্যৎ তোমার আজকের অভ্যাসে তৈরি হয়।",
+"এক ঘণ্টা সোশ্যাল মিডিয়া, নাকি এক ধাপ সফলতার দিকে—সিদ্ধান্ত তোমার।",
+"অন্যের জীবন দেখার চেয়ে নিজের জীবন গড়ো।",
+"ধীরে হলেও প্রতিদিন এগিয়ে যাও।",
+"তোমার প্রতিদ্বন্দ্বী এখন পড়ছে। তুমি কী করছ?",
+"ঘুমানোর আগে নিজেকে জিজ্ঞেস করো—আজ কি আমি এগিয়েছি?",
+"আজকের ত্যাগই আগামী দিনের স্বাধীনতা।",
+"তোমার মায়ের মুখে হাসি ফোটানোর দায়িত্ব এখন তোমার।",
+"তোমার বাবা চাইতেন তুমি মানুষ হও। আজকের সেশনটা সেই স্বপ্নের জন্য।",
+"প্রতিটি নামাজের পর বাবার জন্য দোয়া করো, তারপর নতুন উদ্যমে পড়তে বসো।",
+"নিশ্চয়ই কষ্টের সাথে রয়েছে স্বস্তি। — সূরা আশ-শারহ ৯৪:৬",
+"আর মানুষ তাই-ই পায়, যার জন্য সে চেষ্টা করে। — সূরা আন-নাজম ৫৩:৩৯"
+];
+
+
+
+
+
+
+
+
+
+function updateDisciplineTip(){
+ const el=document.getElementById("discipline-tip");
+ if(el){
+  el.innerText=disciplineTips[Math.floor(Math.random()*disciplineTips.length)];
+ }
+}
+
+function startTimer() {
+
+if(isCounting) return;
+if(currentMode === 'FORCE' && totalSeconds === 0 && forceCompleted){
+    totalSeconds = parseInt(timeInput.value) * 60;
+    maxSeconds = totalSeconds;
+    forceCompleted = false;
+    updateUI();
+}
+
+isCounting = true;
+
+countdownInterval = setInterval(()=>{
+
+if(totalSeconds > 0){
+
+    totalSeconds--;
+    updateUI();
+
+}
+
+if(totalSeconds === 0){
+
+    clearInterval(countdownInterval);
+    isCounting = false;
+
+
+    if(currentMode === 'FORCE'){
+
+        
+currentSessionCount++;
+try{
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(
+"Excellent work, Nasir. Another session is complete. While thousands of people wasted the last ninety minutes scrolling social media, you invested it in building your future. Every line of code you write brings you closer to becoming a software engineer. Every session moves you one step closer to Dhaka University, one step closer to Germany, Norway, America or Australia. One day your dream girl will see the man who never gave up. Take your short break, recover, and come back stronger. Winners are built one session at a time."
+);
+  if(typeof configureUtterance==='function') configureUtterance(u);
+  window.speechSynthesis.speak(u);
+}catch(e){}
+
+        totalLifetimeSessions++;
+        forceCompleted = true;
+        totalSeconds = 60 * 60;
+maxSeconds = totalSeconds;
+
+        awardXP();
+        updateStreak();
+        saveAll();
+
+
+        // goal +1 hour
+        if(selectedGoal && goals[selectedGoal]){
+
+const sessionHours = parseInt(timeInput.value) / 60;
+goals[selectedGoal].hours =
+Number(goals[selectedGoal].hours) + sessionHours;
+          
+            saveGoals();
+
+        }
+
+
+        renderGoals();
+        updateActiveGoalBox();
+
+
+        updateUI();
+
+
+        playAutoMotivation();
+
+
+    } else {
+
+        playAutoMotivation();
+
+    }
+
+
+    // prepare next session automatically
+// prepare next session automatically
+totalSeconds = parseInt(timeInput.value) * 60;
+maxSeconds = totalSeconds;
+forceCompleted = true;
+
+updateUI();
+}
+},1000);
+
+}
+
+
+
+
+  // Initializing
+  checkAndReset();
+  btnStart.addEventListener('click', startTimer);
+  btnPause.addEventListener('click', () => { clearInterval(countdownInterval); isCounting = false; });
+  btnReset.addEventListener('click', () => { clearInterval(countdownInterval); isCounting = false; totalSeconds = parseInt(timeInput.value) * 60; maxSeconds = totalSeconds; updateUI(); });
+  btnSetForce.addEventListener('click', () => { clearInterval(countdownInterval); isCounting = false; currentMode = 'FORCE';     totalSeconds = parseInt(timeInput.value) * 60;
+  maxSeconds = totalSeconds; forceCompleted = false; updateUI(); });
+  btnSetBreak.addEventListener('click', () => { clearInterval(countdownInterval); isCounting = false; currentMode = 'BREAK'; totalSeconds = 9 * 60; maxSeconds = totalSeconds; updateUI(); });
+  
+  updateUI(); updateGameUI(); updateStreakUI();
+</script>
+<script>
+  let goals = JSON.parse(localStorage.getItem('goals_v3') || '{}');
+  let selectedGoal = localStorage.getItem('selectedGoal') || null;;
+  let deleteConfirmCount = 0;
+  let resetConfirmCount = 0;
+  let sessionResetConfirmCount = 0;
+  
+  function saveGoals() {
+    localStorage.setItem('goals_v3', JSON.stringify(goals));
+    renderGoals();
+    renderGoalButtons();
+  }
+  
+  function renderGoals() {
+    const box = document.getElementById('goalBox');
+    if (!box) return;
+  
+    const keys = Object.keys(goals);
+  
+    if (!keys.length) {
+      box.innerHTML = 'No goals yet';
+      return;
+    }
+  
+    box.innerHTML = keys.map(name => {
+      const g = goals[name];
+      const p = g.target ? ((g.hours / g.target) * 100) : 0;
+      const left = (100 - p).toFixed(1);
+  
+     /* return `${name} | ${g.hours}H | ${p.toFixed(1)}% | ${left}% Left |  ${g.since}`; */
+
+     const percent = Math.min(
+  100,
+  (g.hours / g.target) * 100
+).toFixed(1);
+
+const leftHours =
+Math.max(0, g.target - g.hours).toFixed(1);
+
+return `
+<div class="goal-card">
+<span class="goal-name">${name}</span>
+<span class="goal-done">${Number(g.hours).toFixed(2)}H Done</span>
+<span class="goal-left">${leftHours}H Left</span>
+<span class="goal-target">Target ${g.target}H</span>
+<span class="goal-progress">${percent}% Progress</span>
+<span class="goal-status ${g.isStarted ? 'status-running' : 'status-pending'}">
+${g.isStarted ? "ACTIVE" : "NOT STARTED YET"}
+</span>
+
+</div>
+`;
+
+
+    }).join('');
+  }
+  
+  function renderGoalButtons() {
+  
+    const container = document.getElementById('goalButtons');
+    if (!container) return;
+  
+    container.innerHTML = '';
+  
+    Object.keys(goals).forEach(name => {
+  
+      const btn = document.createElement('button');
+  
+      btn.textContent = name;
+  
+      btn.style.margin = '2px';
+      btn.style.padding = '6px 10px';
+      btn.style.borderRadius = '6px';
+      btn.style.border = '1px solid #444';
+      btn.style.cursor = 'pointer';
+      btn.style.fontWeight = '700';
+  
+      if (selectedGoal === name) {
+        btn.style.background = '#00ff87';
+        btn.style.color = '#000';
+      } else {
+        btn.style.background = '#1e293b';
+        btn.style.color = '#fff';
+      }
+
+      btn.onclick = () => {
+
+if (isCounting && currentMode === 'FORCE') {
+  alert("Goal cannot be changed during an active FORCE session!");
+  return;
+}
+
+selectedGoal = name;
+localStorage.setItem('selectedGoal', name);
+renderGoalButtons();
+updateActiveGoalBox();
+};
+
+      container.appendChild(btn);
+    });
+  }
+  
+  window.addEventListener('load', () => {
+  
+    const panel = document.querySelector('.control-panel');
+    if (!panel) return;
+  
+    const wrap = document.createElement('div');
+  
+    wrap.innerHTML = `
+    <div style="font-size:10px;margin-bottom:4px">
+  
+      <div id="goalButtons" style="margin-bottom:6px;"></div>
+  
+      <input id="hourAdd" class="control-input" placeholder="h" style="width:50px">
+  
+      <button id="addHr">+Add</button>
+      <button id="resetGoal">Reset</button>
+      <button id="delGoal">Delete</button>
+    </div>
+  
+    <div style="font-size:10px">
+      <input id="newGoal" class="control-input" placeholder="Goal" style="width:80px">
+      <input id="targetGoal" class="control-input" placeholder="Target" style="width:55px">
+      <input id="goalDays" class="control-input" placeholder="Days" style="width:50px">
+      <button id="createGoal">Create</button>
+      <button id="startGoalBtn">Start</button>
+      <button id="resetSessionsBtn">Sessions</button>
+      <button id="addSessionBtn">+ Session</button>
+    </div>
+    `;
+  
+    panel.prepend(wrap);
+  
+
+
+
+
+    document.getElementById('addHr').style.background =
+'linear-gradient(90deg,#10b981,#059669)';
+
+document.getElementById('resetGoal').style.background =
+'linear-gradient(90deg,#f59e0b,#d97706)';
+document.getElementById('resetSessionsBtn').style.background =
+'linear-gradient(90deg,#dc2626,#7f1d1d)';
+document.getElementById('addSessionBtn').style.background =
+'linear-gradient(90deg,#22c55e,#16a34a)';
+document.getElementById('delGoal').style.background =
+'linear-gradient(90deg,#ef4444,#b91c1c)';
+
+document.getElementById('createGoal').style.background =
+'linear-gradient(90deg,#3b82f6,#1d4ed8)';
+
+['addHr','resetGoal','delGoal','createGoal','startGoalBtn',`resetSessionsBtn`,`addSessionBtn`].forEach(id=>{
+  const btn=document.getElementById(id);
+
+  btn.style.color='white';
+  btn.style.fontWeight='900';
+  btn.style.border='none';
+  btn.style.borderRadius='6px';
+  btn.style.cursor='pointer';
+  btn.style.padding='8px 12px';
+  btn.style.fontSize='12px';
+});
+
+
+
+
+
+
+
+
+
+    document.getElementById('createGoal').onclick = () => {
+  
+      const n = document.getElementById('newGoal').value.trim();
+      const t = parseFloat(document.getElementById('targetGoal').value) || 2520;
+      const days = parseInt(document.getElementById('goalDays').value) || 180;
+  
+      if (!n) return;
+  
+      goals[n] = {
+        hours: 0,
+        target: t,
+        goalDays: days,
+        isStarted:false,
+        startDate:null,
+        since: new Date().toLocaleDateString('en-GB', {
+  day: 'numeric',
+  month: 'short',
+  year: 'numeric'
+})
+      };
+  
+      selectedGoal = n;
+localStorage.setItem('selectedGoal', n);
+
+saveGoals();
+    };
+  
+    document.getElementById('addHr').onclick = () => {
+  
+      if (!selectedGoal) {
+        alert('Select a goal first');
+        return;
+      }
+  
+      const h = parseFloat(document.getElementById('hourAdd').value) || 0;
+  
+      goals[selectedGoal].hours += h;
+  
+      saveGoals();
+    };
+  
+    // document.getElementById('resetGoal').onclick = () => {
+  
+    //   if (!selectedGoal) return;
+  
+    //   goals[selectedGoal].hours = 0;
+  
+    //   goals[selectedGoal].since = new Date().toLocaleDateString('en-GB', {
+    //     day: 'numeric',
+    //     month: 'short',
+    //     year: 'numeric'
+    //   });
+  
+    //   saveGoals();
+  
+    // };
+
+
+
+
+    document.getElementById('resetGoal').onclick = () => {
+
+if (!selectedGoal) return;
+
+resetConfirmCount++;
+
+if (resetConfirmCount < 10) {
+
+  alert(
+    `⚠️ Press ${10 - resetConfirmCount} more times to RESET this goal`
+  );
+
+  return;
+}
+
+goals[selectedGoal].hours = 0;
+
+goals[selectedGoal].since = new Date().toLocaleDateString(
+  'en-GB',
+  {
+    day:'numeric',
+    month:'short',
+    year:'numeric'
+  }
+);
+
+resetConfirmCount = 0;
+
+saveGoals();
+
+alert("🔄 Goal Reset Successfully!");
+};
+
+
+
+  
+    document.getElementById('delGoal').onclick = () => {
+
+if (!selectedGoal) return;
+
+deleteConfirmCount++;
+
+if (deleteConfirmCount < 5) {
+  alert(`⚠️ Press ${5 - deleteConfirmCount} more times to delete this goal`);
+  return;
+}
+
+delete goals[selectedGoal];
+
+selectedGoal = null;
+localStorage.removeItem('selectedGoal');
+
+deleteConfirmCount = 0;
+
+saveGoals();
+
+alert("🗑️ Goal Deleted Successfully!");
+};
+  
+    
+document.getElementById('startGoalBtn').onclick=()=>{
+ if(!selectedGoal || !goals[selectedGoal]) return;
+ goals[selectedGoal].isStarted=true;
+ goals[selectedGoal].startDate=new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+ saveGoals();
+ renderGoals();
+ updateActiveGoalBox();
+};
+document.getElementById('resetSessionsBtn').onclick = () => {
+
+sessionResetConfirmCount++;
+
+if(sessionResetConfirmCount < 10){
+
+alert(
+`⚠️ Press ${10 - sessionResetConfirmCount} more times to reset today's sessions`
+);
+
+return;
+}
+
+currentSessionCount = 0;
+
+sessionResetConfirmCount = 0;
+
+saveAll();
+updateUI();
+
+alert("🔄 Today's Sessions Reset Successfully!");
+
+};
+
+document.getElementById('addSessionBtn').onclick = () => {
+
+if (isCounting && currentMode === 'FORCE') {
+  alert("Stop timer first");
+  return;
+}
+
+currentSessionCount++;
+totalLifetimeSessions++;
+
+saveAll();
+updateUI();
+
+alert("✅ Session Added!");
+};
+
+renderGoals();
+    renderGoalButtons();
+    updateActiveGoalBox();
+  });
+
+
+  function updateActiveGoalBox(){
+
+if(!selectedGoal || !goals[selectedGoal]){
+  goalDateDisplay.innerText = "-";
+  streakDisplay.innerText = "1 DAYS";
+  streakTitleDisplay.innerText = "NO TARGET";
+  return;
+}
+
+const g = goals[selectedGoal];
+
+if(!g.isStarted){
+  streakDisplay.innerText = 'DAY 0';
+  streakTitleDisplay.innerText = selectedGoal.toUpperCase();
+  goalDateDisplay.innerText = '⏳ NOT STARTED';
+  return;
+}
+
+// fixed created date
+const created = new Date(g.startDate || g.since);
+const now = new Date();
+
+// BD 4AM reset logic (তোমার সিস্টেম অনুযায়ী)
+const currentDay = new Date(now);
+if(currentDay.getHours() < 4){
+  currentDay.setDate(currentDay.getDate() - 1);
+}
+currentDay.setHours(4,0,0,0);
+
+const startDay = new Date(created);
+startDay.setHours(4,0,0,0);
+
+// total days passed (NO negative)
+
+let daysPassed = Math.floor(
+  (currentDay - startDay) / (1000 * 60 * 60 * 24)
+) + 1;
+
+if(daysPassed < 1) daysPassed = 1;
+
+// remaining days
+const daysLeft = Math.max(0, g.goalDays - daysPassed);
+
+// UI FIXED OUTPUT
+streakDisplay.innerText = `DAY ${daysPassed} OF ${g.goalDays}`;
+
+streakTitleDisplay.innerText = selectedGoal.toUpperCase();
+
+goalDateDisplay.innerText =
+`${daysLeft} DAYS LEFT • Since ${g.since}`;
+}
+
+  
+setInterval(updateDisciplineTip,3500);
+updateDisciplineTip();
+updateActiveGoalBox();
+
+setInterval(() => {
+  updateActiveGoalBox();
+}, 60000); //
+  </script>
+
+
+</body> 
+</html>
