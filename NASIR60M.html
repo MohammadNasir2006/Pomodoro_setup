@@ -68,7 +68,7 @@
   #display-milestones { color: #00ffd5; text-shadow: 0 0 8px rgba(0, 238, 255, 0.226); }
 
   .session-header { font-size: 26px; font-weight: 900; color: #ffaa00; text-transform: uppercase; margin-bottom: 2px; text-shadow: 0 0 15px rgba(255, 170, 0, 0.4); }
-  .timer-display { font-size: 34px; font-weight: 900; font-variant-numeric: tabular-nums; line-height: 1.1; margin-bottom: 4px; }
+  .timer-display { font-size: 36px; font-weight: 900; font-variant-numeric: tabular-nums; line-height: 1.1; margin-bottom: 4px; }
   .state-force { color: #00f1fe; text-shadow: 5px 5px 15px rgba(129, 242, 254, 0.5); }
   .state-break { color: #ff0055; text-shadow: 5px 5px 15px rgba(255, 0, 85, 0.5); }
 
@@ -407,6 +407,161 @@ font-weight:900;
 letter-spacing:.8px;
 }
 
+
+/* ==========================
+   DAY RATING PREMIUM EFFECT
+========================== */
+
+#day-rating{
+    display:inline-block;
+    position:relative;
+    font-weight:900;
+    letter-spacing:1px;
+    animation:
+        glowPulse 1.8s ease-in-out infinite,
+        floatText 2.5s ease-in-out infinite,
+        shine 3s linear infinite;
+    transition:all .35s ease;
+    will-change:transform,filter;
+}
+
+#day-rating::after{
+    content:'';
+    position:absolute;
+    top:0;
+    left:-120%;
+    width:70%;
+    height:100%;
+    background:linear-gradient(
+        120deg,
+        transparent,
+        rgba(255,255,255,.9),
+        transparent
+    );
+    transform:skewX(-25deg);
+    animation:shimmer 2.8s linear infinite;
+}
+
+@keyframes glowPulse{
+    0%,100%{
+        transform:scale(1);
+        filter:brightness(1);
+    }
+    50%{
+        transform:scale(1.08);
+        filter:brightness(1.5);
+    }
+}
+
+@keyframes floatText{
+    0%,100%{
+        transform:translateY(0);
+    }
+    50%{
+        transform:translateY(-2px);
+    }
+}
+
+@keyframes shimmer{
+    100%{
+        left:180%;
+    }
+}
+
+@keyframes shine{
+    0%,100%{
+        opacity:1;
+    }
+    50%{
+        opacity:.9;
+    }
+}
+
+/* যখন Status পরিবর্তন হবে */
+.day-pop{
+    animation:achievement .45s ease;
+}
+
+@keyframes achievement{
+
+    0%{
+        transform:scale(.6) rotate(-6deg);
+        opacity:.2;
+    }
+
+    40%{
+        transform:scale(1.25) rotate(3deg);
+        opacity:1;
+    }
+
+    70%{
+        transform:scale(.95);
+    }
+
+    100%{
+        transform:scale(1);
+    }
+
+}
+
+
+@keyframes last7Glow{
+
+0%,100%{
+    opacity:.88;
+    text-shadow:
+    0 0 4px rgba(255,255,255,.25),
+    0 0 8px rgba(255,255,255,.10);
+}
+
+50%{
+    opacity:1;
+    text-shadow:
+    0 0 8px rgba(255,255,255,.55),
+    0 0 16px rgba(255,255,255,.20);
+}
+
+}
+
+@keyframes last7Glow{
+
+0%,100%{
+opacity:.88;
+text-shadow:
+0 0 4px rgba(255, 255, 255, 0.466),
+0 0 8px rgba(255, 255, 255, 0.384);
+}
+
+50%{
+opacity:1;
+text-shadow:
+0 0 8px rgba(255,255,255,.55),
+0 0 16px rgba(255,255,255,.20);
+}
+
+}
+@keyframes levelGlow{
+
+0%,100%{
+opacity:.9;
+filter:brightness(1);
+
+text-shadow:
+0 0 6px currentColor,
+0 0 12px rgba(255,255,255,.08);
+}
+
+50%{
+opacity:1;
+filter:brightness(1.55);
+
+text-shadow:
+0 0 10px currentColor,
+0 0 20px currentColor;
+}
+
+}
+
 </style>
 </head>
 <body>
@@ -459,7 +614,7 @@ letter-spacing:.8px;
 
     <div class="status-item">
       <span class="status-label">📅 Day Timeline</span>
-      <span class="status-value" id="display-timeline">10:10 AM - 03:50 AM</span>
+      <span class="status-value" id="display-timeline">7:00 AM - 12:50 AM</span>
     </div>
     <div class="status-item">
       <span class="status-label">🎯 Target Total</span>
@@ -467,11 +622,22 @@ letter-spacing:.8px;
     </div>
     <div class="status-item" style="grid-column: span 2; border-top: 2px solid rgba(255, 255, 255, 0.098); padding-top: 6px; margin-top: 10px;">
       <span class="milestone-label">🍱ALL Breaks (Lunch | Rest | Dinner)</span>
-      <span class="milestone-value" id="display-milestones">Lunch: S3 (20m) | Rest: S7 (45m) | Dinner: S10 (20m)</span>
+      <span class="milestone-value" id="display-milestones">Lunch: S5 (30m) | Rest: S7 (40m) | Dinner: S12 (30m)</span>
     </div>
   </div>
 
-  <div class="session-header" id="session-display">SESSION 0/14</div>
+  <div class="session-header" id="session-display">
+    SESSION 0/14
+    <span id="day-rating"
+        style="
+        margin-left:10px;
+        font-size:18px;
+        font-weight:900;
+        letter-spacing:1px;
+        ">
+        FAILED DAY
+    </span>
+</div>
   
   <div class="timer-display state-force" id="timer-display">FORCE TIME: 60:00</div>
 
@@ -494,16 +660,16 @@ letter-spacing:.8px;
     <div class="input-grid">
       <div class="input-row">
         <label>Day Start Time:</label>
-        <input type="text" id="start-time-input" class="control-input" value="6:30 AM">
+        <input type="text" id="start-time-input" class="control-input" value="7:00 AM">
       </div>
       <div class="input-row">
         <label>Day End Time:</label>
-        <input type="text" id="end-time-input" class="control-input" value="11:55 AM">
+        <input type="text" id="end-time-input" class="control-input" value="12:40 AM">
       </div>
     </div>
     <div class="input-row">
       <label>Breaks Description:</label>
-      <input type="text" id="milestones-input" class="control-input" value="LUNCH: S6 (25m) | REST: S7 (40m) | DINNER: S12 (30m)">
+      <input type="text" id="milestones-input" class="control-input" value="LUNCH: S6 (30m) | REST: S7 (40m) | DINNER: S12 (30m)">
     </div>
     <div class="motivation-player-box">
       <span class="motivation-title">⚡ Instant Discipline Booster</span>
@@ -603,6 +769,7 @@ document.getElementById('goal-date-display');
       const today = now.toDateString();
       
       if (now.getHours() >= 4 && lastReset !== today) {
+        saveLast7Days();
           if (currentSessionCount < 10) streakDays = 0;
           currentSessionCount = 0;
           playerXP = 0;
@@ -619,6 +786,41 @@ document.getElementById('goal-date-display');
       localStorage.setItem("playerLevel", playerLevel);
       localStorage.setItem("streakDays", streakDays);
   }
+
+  function saveLast7Days(){
+
+const today = new Date().toDateString();
+
+if(localStorage.getItem("historySavedDate") === today) return;
+
+let history =
+JSON.parse(localStorage.getItem("last7DaysSessions") || "[]");
+
+const day =
+new Date().toLocaleDateString("en-US",{
+    weekday:"short"
+});
+
+history.push({
+    day,
+    sessions:currentSessionCount
+});
+
+if(history.length>7){
+    history=history.slice(-7);
+}
+
+localStorage.setItem(
+    "last7DaysSessions",
+    JSON.stringify(history)
+);
+
+localStorage.setItem(
+    "historySavedDate",
+    today
+);
+
+}
 
   const levelTitles = {
     1: "DISCIPLINE", 2: "CONSISTENCY", 3: "FOCUS MASTER", 4: "UNSTOPPABLE", 5: "LEGEND MIND"
@@ -827,8 +1029,176 @@ function configureUtterance(utterance) {
     const sessionPercent =
 Math.floor((currentSessionCount / 14) * 100);
 
-sessionDisplay.innerText =
-`SESSION ${currentSessionCount}/14 (${sessionPercent}%)`;
+const history =
+JSON.parse(
+localStorage.getItem("last7DaysSessions") || "[]"
+);
+let dayText = "FOUNDATION LVL 1";
+let dayColor = "#ef4444";
+
+if(currentSessionCount >= 14){
+    dayText = "UNBREAKABLE LVL 5";
+    dayColor = "#22c55e";
+}
+else if(currentSessionCount >= 12){
+    dayText = "DISCIPLINED LVL 4";
+    dayColor = "#16a34a";
+}
+else if(currentSessionCount >= 10){
+    dayText = "CONSISTENT LVL 3";
+    dayColor = "#3b82f6";
+}
+else if(currentSessionCount >= 8){
+    dayText = "IMPROVING LVL 2";
+    dayColor = "#facc15";
+}
+
+
+const historyText = history.length
+? history.map(item => {
+
+    let color = "#ef4444";
+
+    if(item.sessions >= 14){
+        color = "#22c55e";
+    }
+    else if(item.sessions >= 10){
+        color = "#3b82f6";
+    }
+    else if(item.sessions >= 8){
+        color = "#facc15";
+    }
+
+    return `
+    <span style="
+    color:${color};
+    font-weight:900;
+    ">
+    ${item.day}-${item.sessions}
+    </span>
+    `;
+
+}).join(` <span style="color:#64748b;">•</span> `)
+
+: `<span style="color:#ffffff;">Waiting for first record...
+</span>`;
+/*sessionDisplay.innerHTML = `
+SESSION ${currentSessionCount}/14 (${sessionPercent}%)
+
+<span
+id="day-rating"
+class="day-pop"
+style="
+margin-left:10px;
+font-size:18px;
+font-weight:900;
+letter-spacing:1px;
+color:${dayColor};
+text-shadow:${glow};
+">
+${dayText}
+</span>`;
+*/
+
+
+sessionDisplay.innerHTML = `
+
+<div
+style="
+display:flex;
+flex-direction:column;
+gap:3px;
+">
+
+<span
+style="
+display:inline-block;
+width:fit-content;
+
+font-size:14px;
+font-weight:900;
+letter-spacing:1.2px;
+text-transform:uppercase;
+color:#cfe8ff;
+border-bottom:1px solid rgba(255,255,255,.30);
+
+text-shadow:
+0 0 6px rgba(255,255,255,.35),
+0 0 12px rgba(255,255,255,.15);
+
+animation:last7Glow 2.8s ease-in-out infinite;
+">
+LAST 7 DAYS
+</span>
+
+<div
+style="
+display:inline-block;
+width:fit-content;
+
+margin-top:3px;
+padding:5px 8px;
+
+border:1px solid rgba(255,255,255,.18);
+border-radius:8px;
+
+background:rgba(255,255,255,.03);
+
+font-size:12px;
+line-height:1.35;
+white-space:nowrap;
+overflow:hidden;
+text-overflow:ellipsis;
+color:#d1d5db;
+
+box-shadow:
+0 0 10px rgba(255,255,255,.04);
+">
+${historyText}
+</div>
+
+<div
+style="
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-top:2px;
+width:100%;
+">
+
+<span
+style="
+font-size:30px;
+font-weight:900;
+color:#ffd54f;
+line-height:1;
+">
+SESSION ${currentSessionCount}/14
+</span>
+
+<span
+style="
+font-size:12px;
+font-weight:800;
+letter-spacing:.5px;
+white-space:nowrap;
+
+color:${dayColor};
+
+text-shadow:
+0 0 6px ${dayColor}55,
+0 0 12px ${dayColor}25;
+
+animation:levelGlow 2.4s ease-in-out infinite;
+">
+${dayText}
+</span>
+
+</div>
+
+`;
+
+
     sessionInput.value = currentSessionCount;
     displayTimeline.innerText = `${startTimeInput.value} - ${endTimeInput.value}`;
     displayMilestones.innerText = milestonesInput.value;
@@ -997,8 +1367,6 @@ updateUI();
 }
 
 
-
-
   // Initializing
   checkAndReset();
   btnStart.addEventListener('click', startTimer);
@@ -1006,7 +1374,7 @@ updateUI();
   btnReset.addEventListener('click', () => { clearInterval(countdownInterval); isCounting = false; totalSeconds = parseInt(timeInput.value) * 60; maxSeconds = totalSeconds; updateUI(); });
   btnSetForce.addEventListener('click', () => { clearInterval(countdownInterval); isCounting = false; currentMode = 'FORCE';     totalSeconds = parseInt(timeInput.value) * 60;
   maxSeconds = totalSeconds; forceCompleted = false; updateUI(); });
-  btnSetBreak.addEventListener('click', () => { clearInterval(countdownInterval); isCounting = false; currentMode = 'BREAK'; totalSeconds = 9 * 60; maxSeconds = totalSeconds; updateUI(); });
+  btnSetBreak.addEventListener('click', () => { clearInterval(countdownInterval); isCounting = false; currentMode = 'BREAK'; totalSeconds = 8 * 60; maxSeconds = totalSeconds; updateUI(); });
   
   updateUI(); updateGameUI(); updateStreakUI();
 </script>
